@@ -91,6 +91,8 @@
     const auditForm = document.getElementById('auditForm');
     const auditTableBody = document.getElementById('auditTable').querySelector('tbody');
     const audits = [];
+    const MAX_FILE_SIZE_MB = 10;
+    const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
     auditForm.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -103,9 +105,9 @@
       const attachmentInput = document.getElementById('auditAttachment');
       const file = attachmentInput.files[0];
 
-      // Check file size (10MB limit for browser memory)
-      if (file && file.size > 10 * 1024 * 1024) {
-        alert('Warning: The selected file is larger than 10MB and may cause performance issues in the browser. Please consider using a smaller file.');
+      // Check file size limit for browser memory
+      if (file && file.size > MAX_FILE_SIZE_BYTES) {
+        alert(`Warning: The selected file is larger than ${MAX_FILE_SIZE_MB}MB and may cause performance issues in the browser. Please consider using a smaller file.`);
         return;
       }
 
@@ -123,6 +125,9 @@
           audits.push(audit);
           renderTable();
           auditForm.reset();
+        };
+        reader.onerror = function() {
+          alert('Error reading file. Please try again or choose a different file.');
         };
         reader.readAsDataURL(file);
       } else {
