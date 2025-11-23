@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/aeaton4/AuditlyV2.git'
+                // Explicitly specify the 'main' branch
+                git branch: 'main', url: 'https://github.com/aeaton4/AuditlyV2.git'
             }
         }
         stage('Deliver Auditly.html') {
