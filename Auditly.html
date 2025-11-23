@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auditly</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f8f8f8; }
+    input[type="text"], input[type="date"] { width: 100%; }
+    .form-row { margin-bottom: 1em; }
+    .add-btn { padding: 6px 20px; }
+  </style>
+</head>
+<body>
+  <h1>Auditly</h1>
+  <form id="auditForm" autocomplete="off">
+    <div class="form-row">
+      <label>
+        Audit Name: <input type="text" id="auditName" required>
+      </label>
+      <label>
+        Date: <input type="date" id="auditDate" required>
+      </label>
+      <label>
+        Status:
+        <select id="auditStatus">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </label>
+      <button class="add-btn" type="submit">Add Audit</button>
+    </div>
+  </form>
+  <table id="auditTable">
+    <thead>
+      <tr>
+        <th>Audit Name</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Audit rows will appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const auditForm = document.getElementById('auditForm');
+    const auditTableBody = document.getElementById('auditTable').querySelector('tbody');
+    const audits = [];
+
+    auditForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('auditName').value;
+      const date = document.getElementById('auditDate').value;
+      const status = document.getElementById('auditStatus').value;
+
+      const audit = { name, date, status };
+      audits.push(audit);
+      renderTable();
+      auditForm.reset();
+    });
+
+    function renderTable() {
+      auditTableBody.innerHTML = '';
+      audits.forEach(audit => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${audit.name}</td>
+          <td>${audit.date}</td>
+          <td>${audit.status}</td>
+        `;
+        auditTableBody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
