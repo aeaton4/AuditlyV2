@@ -8,10 +8,13 @@
     table { border-collapse: collapse; width: 100%; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background-color: #f8f8f8; }
-    input[type="text"], input[type="date"], select { width: 100%; padding: 4px; }
+    input[type="text"], input[type="date"], input[type="file"], select { width: 100%; padding: 4px; }
     .form-row { margin-bottom: 1em; display: flex; gap: 1em; }
     .form-row label { flex: 1; display: flex; flex-direction: column; }
     .add-btn { padding: 6px 20px; margin-top: auto; }
+    .download-link { color: #0066cc; cursor: pointer; text-decoration: underline; }
+    .download-link:hover { color: #004499; }
+    .no-attachment { color: #999; font-style: italic; }
   </style>
 </head>
 <body>
@@ -61,6 +64,9 @@
       <label>
         Comments: <input type="text" id="auditComments">
       </label>
+      <label>
+        Attachment: <input type="file" id="auditAttachment">
+      </label>
       <button class="add-btn" type="submit">Add Audit</button>
     </div>
   </form>
@@ -73,6 +79,7 @@
         <th>Task Type</th>
         <th>Status</th>
         <th>Comments</th>
+        <th>Attachment</th>
       </tr>
     </thead>
     <tbody>
@@ -93,17 +100,46 @@
       const taskType = document.getElementById('auditTaskType').value;
       const status = document.getElementById('auditStatus').value;
       const comments = document.getElementById('auditComments').value;
+      const attachmentInput = document.getElementById('auditAttachment');
+      const file = attachmentInput.files[0];
+
+      // Check file size (10MB limit for browser memory)
+      if (file && file.size > 10 * 1024 * 1024) {
+        alert('Warning: The selected file is larger than 10MB and may cause performance issues in the browser. Please consider using a smaller file.');
+        return;
+      }
 
       const audit = { name, date, framework, taskType, status, comments };
-      audits.push(audit);
-      renderTable();
-      auditForm.reset();
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          audit.attachment = {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            dataUri: event.target.result
+          };
+          audits.push(audit);
+          renderTable();
+          auditForm.reset();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        audit.attachment = null;
+        audits.push(audit);
+        renderTable();
+        auditForm.reset();
+      }
     });
 
     function renderTable() {
       auditTableBody.innerHTML = '';
       audits.forEach(audit => {
         const row = document.createElement('tr');
+        const attachmentCell = audit.attachment 
+          ? `<a href="${audit.attachment.dataUri}" download="${audit.attachment.name}" class="download-link">${audit.attachment.name}</a>`
+          : '<span class="no-attachment">No Attachment</span>';
         row.innerHTML = `
           <td>${audit.name}</td>
           <td>${audit.date}</td>
@@ -111,6 +147,7 @@
           <td>${audit.taskType || '-'}</td>
           <td>${audit.status || '-'}</td>
           <td>${audit.comments || '-'}</td>
+          <td>${attachmentCell}</td>
         `;
         auditTableBody.appendChild(row);
       });
