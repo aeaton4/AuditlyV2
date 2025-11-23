@@ -8,9 +8,10 @@
     table { border-collapse: collapse; width: 100%; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background-color: #f8f8f8; }
-    input[type="text"], input[type="date"] { width: 100%; }
-    .form-row { margin-bottom: 1em; }
-    .add-btn { padding: 6px 20px; }
+    input[type="text"], input[type="date"], select { width: 100%; padding: 4px; }
+    .form-row { margin-bottom: 1em; display: flex; gap: 1em; }
+    .form-row label { flex: 1; display: flex; flex-direction: column; }
+    .add-btn { padding: 6px 20px; margin-top: auto; }
   </style>
 </head>
 <body>
@@ -24,12 +25,41 @@
         Date: <input type="date" id="auditDate" required>
       </label>
       <label>
+        Framework:
+        <select id="auditFramework">
+          <option value="">Select Framework</option>
+          <option value="SOC 2">SOC 2</option>
+          <option value="ISO 27001">ISO 27001</option>
+          <option value="ISO 9001">ISO 9001</option>
+          <option value="ISO 20000-1">ISO 20000-1</option>
+          <option value="CMMI">CMMI</option>
+          <option value="PCI">PCI</option>
+        </select>
+      </label>
+    </div>
+    <div class="form-row">
+      <label>
+        Task Type:
+        <select id="auditTaskType">
+          <option value="">Select Task Type</option>
+          <option value="Deliverable">Deliverable</option>
+          <option value="Finding">Finding</option>
+          <option value="Observation">Observation</option>
+          <option value="Recommendation">Recommendation</option>
+        </select>
+      </label>
+      <label>
         Status:
         <select id="auditStatus">
-          <option value="Open">Open</option>
+          <option value="">Select Status</option>
+          <option value="Not Started">Not Started</option>
           <option value="In Progress">In Progress</option>
-          <option value="Closed">Closed</option>
+          <option value="Complete">Complete</option>
+          <option value="Overdue">Overdue</option>
         </select>
+      </label>
+      <label>
+        Comments: <input type="text" id="auditComments">
       </label>
       <button class="add-btn" type="submit">Add Audit</button>
     </div>
@@ -39,7 +69,10 @@
       <tr>
         <th>Audit Name</th>
         <th>Date</th>
+        <th>Framework</th>
+        <th>Task Type</th>
         <th>Status</th>
+        <th>Comments</th>
       </tr>
     </thead>
     <tbody>
@@ -56,9 +89,12 @@
       e.preventDefault();
       const name = document.getElementById('auditName').value;
       const date = document.getElementById('auditDate').value;
+      const framework = document.getElementById('auditFramework').value;
+      const taskType = document.getElementById('auditTaskType').value;
       const status = document.getElementById('auditStatus').value;
+      const comments = document.getElementById('auditComments').value;
 
-      const audit = { name, date, status };
+      const audit = { name, date, framework, taskType, status, comments };
       audits.push(audit);
       renderTable();
       auditForm.reset();
@@ -71,7 +107,10 @@
         row.innerHTML = `
           <td>${audit.name}</td>
           <td>${audit.date}</td>
-          <td>${audit.status}</td>
+          <td>${audit.framework || '-'}</td>
+          <td>${audit.taskType || '-'}</td>
+          <td>${audit.status || '-'}</td>
+          <td>${audit.comments || '-'}</td>
         `;
         auditTableBody.appendChild(row);
       });
