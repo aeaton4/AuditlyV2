@@ -51,6 +51,7 @@
       <label>
         Status:
         <select id="auditStatus">
+          <option value="">Select Status</option>
           <option value="Not Started">Not Started</option>
           <option value="In Progress">In Progress</option>
           <option value="Complete">Complete</option>
@@ -106,10 +107,10 @@
         row.innerHTML = `
           <td>${audit.name}</td>
           <td>${audit.date}</td>
-          <td>${audit.framework || ''}</td>
-          <td>${audit.taskType || ''}</td>
-          <td>${audit.status}</td>
-          <td>${audit.comments || ''}</td>
+          <td>${audit.framework || '-'}</td>
+          <td>${audit.taskType || '-'}</td>
+          <td>${audit.status || '-'}</td>
+          <td>${audit.comments || '-'}</td>
         `;
         auditTableBody.appendChild(row);
       });
